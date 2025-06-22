@@ -1,0 +1,27 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static "img/logo.png" %}" type="image/x-icon">
+    
+    <!-- CSS -->  
+    <link rel="stylesheet" href="{% static 'css/bootstrap.rtl.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/colors.css' %}">
+    
+    <title>{% block title %}مستربین{% endblock %}</title>
+</head>
+<body class="bg-light container-fluid">
+    
+    <!-- navbar -->  
+    {% include "navbar.html" %}
+    
+    <!-- main block -->  
+    {% block main %}{% endblock %}
+
+    <!-- JS -->  
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

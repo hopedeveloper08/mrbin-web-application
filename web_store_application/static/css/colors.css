@@ -1,0 +1,52 @@
+:root {
+  --color-primary: #2E8B57;
+  --color-secondary: #F4F4F4;
+  --color-accent: #FFA500;
+  --color-text: #333333;
+  --color-bg: #FFFFFF;
+}
+
+.bg-primary { background-color: var(--color-primary) !important; }
+.text-primary { color: var(--color-primary) !important; }
+
+.bg-secondary { background-color: var(--color-secondary) !important; }
+.text-secondary { color: var(--color-secondary) !important; }
+
+.bg-accent { background-color: var(--color-accent) !important; }
+.text-accent { color: var(--color-accent) !important; }
+
+.text-dark { color: var(--color-text) !important; }
+.bg-light { background-color: var(--color-bg) !important; }
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover, 
+.btn-primary:active {
+  background-color: #246b45 !important; 
+}
+
+.btn-accent {
+background-color: var(--color-accent);
+color: white;
+border: none;
+}
+
+.btn-accent:hover, 
+.btn-accent:active {
+  background-color: #e69500 !important;
+}
+
+.btn-secondary {
+  background-color: var(--color-secondary);
+  color: var(--color-text);
+  border: 1px solid #ccc;
+}
+
+.btn-secondary:hover,
+.btn-secondary:active {
+  background-color: #eaeaea !important;
+}
