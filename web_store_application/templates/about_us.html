@@ -1,0 +1,37 @@
+{% load static %}
+
+<style>#zarinpal img {width: 80px;}</style>
+<div class="bg-secondary text-dark w-100 py-4 rounded-top-5 rounded-bottom-0">
+
+    <div class="container">
+
+        <div class="row text-center">
+
+            <!-- info -->
+            <div class="col-md-6">
+                <div class="d-flex flex-column justify-content-center">
+                    <div>آدرس: شیراز، بلوار عدالت جنوبی، خیابان فتح المبین (فرگاز قدیم)، نبش تقاطع دستغیب (چهار راه فرگاز قدیم)</div>
+                    <div>تلفن: 09036202425</div>
+                </div>
+            </div>
+
+            <!-- symbol -->
+            <div class="col-md-6 mt-3 mt-md-0">
+                <div class="d-flex justify-content-center">
+                    <!-- enamad -->
+                    <div>
+                        <img src="{% static "img/enamad.png" %}" class="rounded-2" alt="نماد اعتماد" width="80" height="115">
+                    </div>
+                    
+                    <!-- zarinpal -->
+                    <div id="zarinpal" class="ms-3" >
+                        <script src="https://www.zarinpal.com/webservice/TrustCode" type="text/javascript"></script>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

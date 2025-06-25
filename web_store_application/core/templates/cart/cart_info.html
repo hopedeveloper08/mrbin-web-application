@@ -1,0 +1,21 @@
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h5 class="card-title mb-4">خلاصه سبد خرید</h5>
+        <ul class="list-unstyled mb-3">
+            <li class="d-flex justify-content-between mb-2">
+                <span>تعداد کل سطل‌ها:</span>
+                <strong class="text-dark">{{ cart_items_count }} عدد</strong>
+            </li>
+            <li class="d-flex justify-content-between">
+                <span>قیمت کل:</span>
+                <strong class="text-accent">{{ total_price }} تومان</strong>
+            </li>
+        </ul>
+        <div class="d-grid">
+            <a href="{% url 'order' %}" class="btn btn-primary btn-lg">
+                ثبت سفارش
+                <i class="bi bi-cart-check-fill ms-2"></i>
+            </a>
+        </div>
+    </div>
+</div>

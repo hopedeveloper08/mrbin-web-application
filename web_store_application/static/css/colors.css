@@ -1,6 +1,6 @@
 :root {
   --color-primary: #2E8B57;
-  --color-secondary: #F4F4F4;
+  --color-secondary: #EAEAEA;
   --color-accent: #FFA500;
   --color-text: #333333;
   --color-bg: #FFFFFF;
@@ -16,7 +16,6 @@
 .text-accent { color: var(--color-accent) !important; }
 
 .text-dark { color: var(--color-text) !important; }
-.bg-light { background-color: var(--color-bg) !important; }
 
 .btn-primary {
   background-color: var(--color-primary);

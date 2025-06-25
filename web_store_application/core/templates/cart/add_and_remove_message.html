@@ -1,0 +1,27 @@
+{% if messages %}
+    <style>
+        .message-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            width: auto;
+            max-width: 400px;
+        }
+        
+        .alert {
+            margin-bottom: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+
+    <div class="message-container">
+        {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'success' %}{{ message.tags }}{% else %}danger{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endif %}

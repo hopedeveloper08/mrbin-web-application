@@ -11,17 +11,32 @@
     <link rel="stylesheet" href="{% static 'css/bootstrap.rtl.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/colors.css' %}">
     
+    <!-- font -->
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font/dist/font-face.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Vazir', sans-serif;
+        }
+    </style>
+    
     <title>{% block title %}مستربین{% endblock %}</title>
 </head>
-<body class="bg-light container-fluid">
-    
+<body class="bg-light d-flex flex-column min-vh-100">
+        
     <!-- navbar -->  
-    {% include "navbar.html" %}
-    
+    <navbar class="container sticky-top">{% include "navbar.html" %}</navbar>
+
     <!-- main block -->  
-    {% block main %}{% endblock %}
+    <main class="container mt-4 flex-grow-1">{% block main %}{% endblock %}</main>
+    
+    <!-- footer -->
+    <footer class="container mt-5">{% include "about_us.html" %}</footer>
+
+    <!-- cart -->
+    {% include "cart/cart.html" %}
 
     <!-- JS -->  
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/script.js' %}"></script>
 </body>
 </html>

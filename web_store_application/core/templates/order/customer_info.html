@@ -1,0 +1,8 @@
+{% for field in form %}
+    <div class="col-12 d-flex flex-column align-items-center">
+        <div class="w-75">
+            <label class="form-label h5 mb-2 mt-4">{{ field.label }}</label>
+            {{ field }}
+        </div>
+    </div>
+{% endfor %}

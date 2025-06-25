@@ -1,0 +1,55 @@
+<div class="row row-cols-lg-3 row-cols-md-2 row-cols-1">
+    
+    {% for bin in bins %}
+    
+    <!-- bin -->
+    <div class="col my-4" id="{{ bin.title }}">
+        <div class="card h-100 shadow-sm">
+
+            <!-- inventory-->
+            <span class="badge bg-secondary text-dark rounded-bottom-0">موجودی {{ bin.inventory }} عدد</span>
+            
+            <!-- image -->
+            <img src="media/{{ bin.image }}" class="card-img-top" alt="bin-image">
+            
+            <div class="card-body">
+                
+                <!-- title -->
+                <h5 class="card-title">{{ bin.title }}</h5>
+                
+                <!-- price -->
+                <h6 class="text-accent my-3">{{ bin.formatted_price }} تومان</h6>
+                
+                <!-- info -->
+                <table class="table table-sm">
+                    <tbody>
+                        <tr>
+                            <td><strong>برند</strong></td>
+                            <td>{{ bin.brand }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>حجم</strong></td>
+                            <td>{{ bin.size }} لیتر</td>
+                        </tr>
+                        <tr>
+                            <td><strong>رنگ</strong></td>
+                            <td>{{ bin.color }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ابعاد</strong></td>
+                            <td>{{ bin.dimensions }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <!-- buttons -->
+                {% include "cart/add_and_remove_as_cart_buttons.html" %}
+
+            </div>  
+        </div>
+        
+    </div>
+    
+    {% endfor %}
+
+</div>

@@ -1,0 +1,22 @@
+<nav class="d-flex justify-content-center mt-4">
+    <ul class="pagination">
+        
+        <!-- Previous -->
+        <li class="page-item btn-outline-info {% if not page_obj.has_previous %}disabled{% endif %}">
+            <a class="page-link btn-outline-info" href="{% if page_obj.has_previous %}?page={{ page_obj.previous_page_number }}{% endif %}" aria-label="Previous">
+                <span aria-hidden="true">صفحه قبل</span>
+            </a>
+        </li>
+        
+        <!-- page numbers -->
+        <li class="page-item"><a class="page-link">{{ page_obj.number }}</a></li>
+        
+        <!-- next -->
+        <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+            <a class="page-link" href="?page={% if page_obj.has_next %}{{ page_obj.next_page_number }}{% endif %}" aria-label="Next">
+                <span aria-hidden="true">صفحه بعد</span>
+            </a>
+        </li>
+
+    </ul>
+</nav>
