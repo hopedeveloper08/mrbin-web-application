@@ -7,8 +7,8 @@ from django.utils.timezone import localtime
 from .models import Bin, Order, OrderItem
 
 
-admin.site.site_header = "پنل مدیریت مستربین"
-admin.site.site_title = "مستربین"
+admin.site.site_header = "پنل مدیریت آقای سطل"
+admin.site.site_title = "آقای سطل"
 admin.site.index_title = "مدیریت سایت"
 
 admin.site.unregister(User)

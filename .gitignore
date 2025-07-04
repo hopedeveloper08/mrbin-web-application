@@ -4,3 +4,5 @@ __pycache__/
 # django
 db.sqlite3
 media/
+staticfiles/
+local_config.py

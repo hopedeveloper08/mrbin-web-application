@@ -8,8 +8,16 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from django.urls import reverse
 
+from urllib.parse import unquote
+from zarinpal import ZarinPal
+from utils.Config import Config
+
 from .models import Bin, Order, OrderItem
 from .forms import CustomerInfoForm
+from .local_config import POSTAGE, MERCHANT_ID
+
+
+ZARINPAL = ZarinPal(Config(merchant_id= MERCHANT_ID))
 
 
 class MainPage(ListView):
@@ -18,17 +26,17 @@ class MainPage(ListView):
     context_object_name = 'bins'
     paginate_by = 6
 
+    def get_queryset(self):
+        return Bin.objects.order_by('title')
+
 
 class OrderPage(FormView):
     template_name = 'order/order.html'
     form_class = CustomerInfoForm
-    success_url = 'success'
+    success_url = '/order/success/'
 
     def form_valid(self, form):
 
-        # postage
-        postage = 79_000
-        
         # calculate total price
         cart = self.request.session.get('cart', {})
         total_price = 0
@@ -40,29 +48,72 @@ class OrderPage(FormView):
                 continue
             total_price += int(bin.price) * qty
             items.append((bin, qty))
-        total_price += postage
+        total_price += POSTAGE
 
-        # payment
-        
-        # create order
-        order = form.save(commit=False)
-        order.total_price = total_price
-        order.save()
+        # initiate payment
+        response = ZARINPAL.payments.create({
+            "amount": total_price,
+            "currency": 'IRT',
+            "callback_url": 'https://mr-bin.ir/order-registration/',
+            "description": 'Transaction for bin.',
+            'mobile': form.instance.phone_number,
+            'order_id': form.instance.customer_name,
+        })
+        if "data" in response and "authority" in response["data"]:
+            self.request.session['user_info'] = {
+                'customer_name': form.instance.customer_name,
+                'phone_number': form.instance.phone_number,
+                'address': form.instance.address,
+                'postal_code': form.instance.postal_code,
+                'total_price': total_price,
+            }
+            payment_url = ZARINPAL.payments.generate_payment_url(response["data"]["authority"])
+            return redirect(payment_url)
+        else:
+            messages.error(self.request, 'ارتباط با درگاه پرداخت برقرار نشد.')
+            return redirect('/')
 
-        # order items and reduce inventory
-        for bin, qty in items:
-            if bin.inventory - qty < 0:
-                bin.inventory = 0
-            else:
-                bin.inventory -= qty
-            bin.save()
-            OrderItem.objects.create(order=order, bin=bin, quantity=qty)
 
-        # clear cart
-        self.request.session['cart'] = {}
-        self.request.session['order_id'] = order.id
-        
-        return redirect('order_success')
+def order_registration(request):
+
+    # verify payment
+    if request.GET.get('Status') != "OK":
+        messages.error(request, 'پرداخت ناموفق بود.')
+        return redirect('/')
+    response = ZARINPAL.verifications.verify({
+        "amount": request.session['user_info']['total_price'],
+        "authority": request.GET.get('Authority'),
+    })
+    if response["data"]["code"] != 100 and response["data"]["code"] != 101:
+        messages.error(request, f'پرداخت ناموفق بود. کد خطا: {response["data"]["code"]}')
+        return redirect('/')
+
+    # create order
+    user_info = request.session['user_info']
+    order = Order.objects.create(
+        customer_name=user_info['customer_name'],
+        phone_number=user_info['phone_number'],
+        address=user_info['address'],
+        postal_code=user_info['postal_code'],
+        total_price=user_info['total_price'],
+    )
+
+    # order items
+    cart = request.session.get('cart', {})
+    for title, qty in cart.items():
+        bin = Bin.objects.get(title=title)
+        if bin.inventory - qty < 0:
+            bin.inventory = 0
+        else:
+            bin.inventory -= qty
+        bin.save()
+        OrderItem.objects.create(order=order, bin=bin, quantity=qty)
+
+    # clear cart
+    request.session['cart'] = {}
+    request.session['order_id'] = order.id
+    
+    return redirect('/order/success/')
 
 
 class OrderSuccessView(TemplateView):
@@ -76,12 +127,14 @@ class OrderSuccessView(TemplateView):
     
 
 def add_to_cart(request, title):
-
+    title = unquote(title)
+    
     # if exist 
     try:
         bin = Bin.objects.get(title=title)
     except Bin.DoesNotExist:
-        return redirect('main')
+        messages.error(request, f'"{title}" یافت نشد.')
+        return redirect('/')
     
     # load cart
     cart = request.session.get('cart', {})
@@ -101,12 +154,14 @@ def add_to_cart(request, title):
 
 
 def remove_from_cart(request, title):
-    
+    title = unquote(title)
+
     # if exist 
     try:
         Bin.objects.get(title=title)
     except Bin.DoesNotExist:
-        return redirect('main')
+        messages.error(request, f'"{title}" یافت نشد.')
+        return redirect('/')
     
     # if not in cart 
     cart = request.session.get('cart', {})

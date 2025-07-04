@@ -5,11 +5,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="{% static "img/logo.png" %}" type="image/x-icon">
+    <link rel="icon" href="{% static "img/logo.png" %}" type="image/png">
+
+    <meta name="description" content="فروشگاه سطل زباله آقای سطل">
     
     <!-- CSS -->  
     <link rel="stylesheet" href="{% static 'css/bootstrap.rtl.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/colors.css' %}">
+    <link rel="icon" href="/static/img/logo.png" type="image/png">
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "آقای سطل",
+            "url": "https://mr-bin.ir",
+            "logo": "https://mr-bin.ir/static/img/logo.png"
+        }
+    </script>
     
     <!-- font -->
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font/dist/font-face.css" rel="stylesheet">
@@ -19,7 +31,7 @@
         }
     </style>
     
-    <title>{% block title %}مستربین{% endblock %}</title>
+    <title>{% block title %}آقای سطل{% endblock %}</title>
 </head>
 <body class="bg-light d-flex flex-column min-vh-100">
         
