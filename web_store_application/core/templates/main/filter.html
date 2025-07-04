@@ -1,0 +1,40 @@
+{% load widget_tweaks %}
+
+<form method="get" class="border p-3 rounded shadow my-3">
+    <div class="text-center my-2">
+        <h4>فیلتر سطل ها</h4>
+    </div>
+    <div class="mb-3">
+        {{ filter.form.title.label_tag }}
+        <div class="input-group">
+            {{ filter.form.title|add_class:"form-control shadow-sm" }}
+            <button type="submit" class="btn btn-primary">
+                جستجو
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+    <div class="mb-3">
+        {{ filter.form.brand.label_tag }}
+        {{ filter.form.brand|add_class:"form-select shadow-sm" }}
+    </div>
+    <div class="mb-3">
+        {{ filter.form.color.label_tag }}
+        {{ filter.form.color|add_class:"form-select shadow-sm" }}
+    </div>
+    <div class="mb-3">
+        {{ filter.form.size.label_tag }}
+        {{ filter.form.size|add_class:"form-select shadow-sm" }}
+    </div>
+</form>
+
+<script>
+    const filterForm = document.querySelector('form');
+    filterForm.querySelectorAll('select').forEach(element => {
+        element.addEventListener('change', () => {
+            filterForm.submit();
+        });
+    });
+</script>

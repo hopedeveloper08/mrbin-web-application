@@ -23,13 +23,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 from .local_config import SECRET_KEY
  
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     'mr-bin.ir',
     'www.mr-bin.ir',
     'http://mr-bin.ir',
     'https://mr-bin.ir',
+    '127.0.0.1',
 ]
 
 
@@ -44,7 +45,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'jalali_date',
-
+    'django_filters',
+    'widget_tweaks',
+    
     'core',
 ]
 

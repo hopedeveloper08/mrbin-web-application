@@ -15,7 +15,7 @@ from utils.Config import Config
 from .models import Bin, Order, OrderItem
 from .forms import CustomerInfoForm
 from .local_config import POSTAGE, MERCHANT_ID
-
+from .filters import BinFilter
 
 ZARINPAL = ZarinPal(Config(merchant_id= MERCHANT_ID))
 
@@ -24,10 +24,17 @@ class MainPage(ListView):
     model = Bin
     template_name = 'main/main.html'  
     context_object_name = 'bins'
-    paginate_by = 6
+    paginate_by = 3
 
     def get_queryset(self):
-        return Bin.objects.order_by('title')
+        bins = Bin.objects.order_by('title')
+        self.bin_filter = BinFilter(self.request.GET, queryset=bins)
+        return self.bin_filter.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter'] = self.bin_filter
+        return context
 
 
 class OrderPage(FormView):

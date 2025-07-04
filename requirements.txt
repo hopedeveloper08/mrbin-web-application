@@ -4,3 +4,5 @@ django-jalali-date
 jdatetime
 pillow
 zarinpal-py-sdk
+django-filter
+django-widget-tweaks

@@ -2,7 +2,8 @@
 
 {% block main %}
 
-    {% include "cart/add_and_remove_message.html" %}   
+    {% include "cart/add_and_remove_message.html" %}  
+
     <h1 class="text-dark text-center">فروشگاه سطل زباله آقای سطل</h1><br>
     <div class="alert alert-info shadow" role="alert">
         <p class="w-100 m-0 p-0"> 
@@ -21,11 +22,12 @@
     <div class="row">
         
         <!-- filter -->
-        <div class="col-md-3">
+        <div class="col-lg-3">
+            {% include "main/filter.html" %}   
         </div>
         
         <!-- products -->
-        <div class="col-md-9">
+        <div class="col-lg-9">
             {% include "main/products.html" %}   
             <br>
             {% include "main/pagination.html" %}
