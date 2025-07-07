@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}انتخاب آدرس{% endblock %}
+
+{% block main %}
+
+<!-- لینک‌های CSS و JS Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+<!-- هشدار بالا -->
+<div class="alert alert-info shadow" role="alert">
+    <p class="w-100 m-0 p-0">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle-fill" viewBox="0 0 16 16">
+            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
+        </svg>
+        آدرس خود را روی نقشه انتخاب کنید. <br>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle-fill" viewBox="0 0 16 16">
+            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
+        </svg>
+        با کلیک بر روی آیکون ذره بین میتوانید جستجو انجام دهید. بعد از نوشتن در جستجو روی ذره بین کلیک کنید تا جستجو انجام شود.
+    </p>
+</div>
+
+<p class="mt-3">
+    اگر آدرس شما خارج از شهر شیراز است، 
+    <button class="btn btn-link p-0" onclick="setOutOfShiraz()">اینجا را کلیک کنید</button>.
+</p>
+
+<div class="container my-4">
+  <div id="map" class="shadow rounded" style="min-height: 50vh;"></div>
+  <form id="confirm-form" method="GET" action="/calculate-postage" class="mt-5">
+    <input type="hidden" name="lat" id="lat">
+    <input type="hidden" name="lng" id="lng">
+    <input type="hidden" name="address" id="address">
+    <div class="text-center">
+      <button type="button" class="btn btn-primary w-50" onclick="fetchAddress()">نمایش آدرس و تایید</button>
+    </div>
+  </form>
+</div>
+
+<!-- Modal Bootstrap برای تایید نهایی -->
+<div class="modal fade" id="addressModal" tabindex="-1" aria-labelledby="addressModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">تایید آدرس</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="addressText">در حال دریافت آدرس...</div>
+      <div class="modal-footer">
+        <button type="submit" form="confirm-form" class="btn btn-success">تایید و ادامه</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بازگشت</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var map = L.map('map').setView([29.6, 52.54], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+  var marker = L.marker([29.6, 52.54], { draggable: true }).addTo(map);
+  var geocoder = L.Control.geocoder({ defaultMarkGeocode: false })
+    .on('markgeocode', function(e) {
+      var latlng = e.geocode.center;
+      marker.setLatLng(latlng);
+      map.setView(latlng, 16);
+      updateLatLng(latlng.lat, latlng.lng);
+    })
+    .addTo(map);
+
+  map.on('click', function(e) {
+    marker.setLatLng(e.latlng);
+    updateLatLng(e.latlng.lat, e.latlng.lng);
+  });
+
+  marker.on('dragend', function() {
+    var latlng = marker.getLatLng();
+    updateLatLng(latlng.lat, latlng.lng);
+  });
+
+  function updateLatLng(lat, lng) {
+    document.getElementById('lat').value = lat;
+    document.getElementById('lng').value = lng;
+  }
+  
+  async function fetchAddress() {
+    const lat = document.getElementById('lat').value;
+    const lng = document.getElementById('lng').value;
+    
+    if (!lat || !lng) return alert('لطفاً موقعیت را روی نقشه مشخص کنید.');
+    
+    try {
+      const res = await fetch(`/reverse-geocode?lat=${lat}&lng=${lng}`);
+      
+      if (!res.ok) throw new Error('خطا در دریافت آدرس');
+      
+      const data = await res.json();
+      document.getElementById('addressText').innerText = data.formatted_address;
+      document.getElementById('address').value = data.formatted_address;
+      
+      new bootstrap.Modal(document.getElementById('addressModal')).show();
+    } catch (err) {
+      alert('دریافت آدرس ناموفق بود.');
+    }
+  }
+
+  function setOutOfShiraz() {
+    document.getElementById('address').value = 'خارج از شیراز';
+    document.getElementById('lat').value = '';
+    document.getElementById('lng').value = '';
+    document.getElementById('confirm-form').submit();
+  }
+</script>
+
+{% endblock %}

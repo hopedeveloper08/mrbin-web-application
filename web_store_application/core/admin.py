@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group, User
 import jdatetime
 from django.utils.timezone import localtime
 
-from .models import Bin, Order, OrderItem
+from .models import Bin, Order, OrderItem, PostagePrice
 
 
 admin.site.site_header = "پنل مدیریت آقای سطل"
@@ -44,7 +44,6 @@ class OrderAdmin(admin.ModelAdmin):
     created_at_jalali.short_description = 'زمان ایجاد'
     
     list_display = ['id', 'customer_name', 'phone_number', 'status', 'formatted_price', 'created_at_jalali']
-    list_display_links = ['id', 'customer_name', 'phone_number']
     list_filter = ['status', 'created_at']
     search_fields = ['customer_name', 'phone_number']
     ordering = ['-created_at']
@@ -54,7 +53,7 @@ class OrderAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('اطلاعات مشتری', {
-            'fields': ('customer_name', 'phone_number', 'address', 'postal_code')
+            'fields': ('customer_name', 'phone_number', 'address', 'lng', 'lat', 'postal_code')
         }),
         ('اطلاعات سفارش', {
             'fields': ('status', 'formatted_price', 'created_at_jalali')
@@ -69,3 +68,16 @@ class OrderAdmin(admin.ModelAdmin):
         total = sum(item.quantity * item.bin.price for item in order.items.all())
         order.total_price = total
         order.save()
+
+
+@admin.register(PostagePrice)
+class PostagePriceAdmin(admin.ModelAdmin):
+    list_display = ['id', 'init', 'per_km']
+    list_editable = ['init', 'per_km']
+    
+    fieldsets = (
+        (None, {
+            'fields': ('init', 'per_km')
+        }),
+    )
+    

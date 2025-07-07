@@ -1,5 +1,5 @@
 from .models import Bin
-from .local_config import POSTAGE
+
 
 def formatted_price(price):
     return f'{price:,}'
@@ -28,6 +28,6 @@ def cart_contents(request):
         'cart_items_count': sum(list(map(lambda x: x[1], cart.items()))),
         'cart_items': products_in_cart,
         'total_price': formatted_price(total_price),
-        'postage': formatted_price(POSTAGE),
-        'total_price_with_postage': formatted_price(total_price + POSTAGE),
+        'postage': formatted_price(request.session.get('postage', 0)),
+        'total_price_with_postage': formatted_price(total_price + request.session.get('postage', 0)),
     }

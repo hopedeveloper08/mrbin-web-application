@@ -3,10 +3,11 @@ from django.views.generic import (
     FormView,
     TemplateView,
 )
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 
 from urllib.parse import unquote
 from zarinpal import ZarinPal
@@ -14,10 +15,15 @@ from utils.Config import Config
 
 from .models import Bin, Order, OrderItem
 from .forms import CustomerInfoForm
-from .local_config import POSTAGE, MERCHANT_ID
+from .local_config import MERCHANT_ID, NESHAN_KEY
 from .filters import BinFilter
+from .postage_price import get_postage_price
+
+import requests
+
 
 ZARINPAL = ZarinPal(Config(merchant_id= MERCHANT_ID))
+
 
 
 class MainPage(ListView):
@@ -42,6 +48,11 @@ class OrderPage(FormView):
     form_class = CustomerInfoForm
     success_url = '/order/success/'
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.session.get('postage', None) is None:
+            return redirect('/address/')
+        return super().dispatch(request, *args, **kwargs)
+
     def form_valid(self, form):
 
         # calculate total price
@@ -55,7 +66,7 @@ class OrderPage(FormView):
                 continue
             total_price += int(bin.price) * qty
             items.append((bin, qty))
-        total_price += POSTAGE
+        total_price += self.request.session['postage']
 
         # initiate payment
         response = ZARINPAL.payments.create({
@@ -67,18 +78,19 @@ class OrderPage(FormView):
             'order_id': form.instance.customer_name,
         })
         if "data" in response and "authority" in response["data"]:
-            self.request.session['user_info'] = {
-                'customer_name': form.instance.customer_name,
-                'phone_number': form.instance.phone_number,
-                'address': form.instance.address,
-                'postal_code': form.instance.postal_code,
-                'total_price': total_price,
-            }
+            self.request.session['customer_name'] = form.instance.customer_name
+            self.request.session['phone_number'] = form.instance.phone_number
+            self.request.session['postal_code'] = form.instance.postal_code
+            self.request.session['total_price'] = total_price
             payment_url = ZARINPAL.payments.generate_payment_url(response["data"]["authority"])
             return redirect(payment_url)
         else:
             messages.error(self.request, 'ارتباط با درگاه پرداخت برقرار نشد.')
             return redirect('/')
+
+
+class Address(TemplateView):
+    template_name = 'address/address.html'
 
 
 def order_registration(request):
@@ -88,7 +100,7 @@ def order_registration(request):
         messages.error(request, 'پرداخت ناموفق بود.')
         return redirect('/')
     response = ZARINPAL.verifications.verify({
-        "amount": request.session['user_info']['total_price'],
+        "amount": request.session['total_price'],
         "authority": request.GET.get('Authority'),
     })
     if response["data"]["code"] != 100 and response["data"]["code"] != 101:
@@ -96,13 +108,14 @@ def order_registration(request):
         return redirect('/')
 
     # create order
-    user_info = request.session['user_info']
     order = Order.objects.create(
-        customer_name=user_info['customer_name'],
-        phone_number=user_info['phone_number'],
-        address=user_info['address'],
-        postal_code=user_info['postal_code'],
-        total_price=user_info['total_price'],
+        customer_name=request.session['customer_name'],
+        phone_number=request.session['phone_number'],
+        address=request.session['address'],
+        lng=request.session['lng'],
+        lat=request.session['lat'],
+        postal_code=request.session['postal_code'],
+        total_price=request.session['total_price'],
     )
 
     # order items
@@ -189,3 +202,53 @@ def remove_from_cart(request, title):
     # Back to bin
     referer = request.META.get('HTTP_REFERER', reverse('main'))
     return HttpResponseRedirect(referer)
+
+
+def calculate_postage(request):
+    lat = request.GET.get('lat', '')
+    lng = request.GET.get('lng', '')
+    address = request.GET.get('address', '')
+    address = unquote(address)
+    
+    # out of shiraz
+    if address == 'خارج از شیراز':
+        request.session['lat'] = 0
+        request.session['lng'] = 0
+        request.session['postage'] = 0
+        request.session['address'] = address
+        return redirect('/order')
+
+    # validation
+    if lat == '' or lng == '' or address == '':
+        return HttpResponse(status=204)
+    lat = float(lat)
+    lng = float(lng)
+
+    # get postage
+    request.session['postage'] = get_postage_price(lat, lng)
+    
+    # set address
+    request.session['lat'] = lat
+    request.session['lng'] = lng
+    request.session['address'] = address
+    
+    return redirect('/order')
+
+
+@csrf_exempt
+def reverse_geocode(request):
+    lat = request.GET.get('lat')
+    lng = request.GET.get('lng')
+    if not lat or not lng:
+        return JsonResponse({'error': 'lat/lng required'}, status=400)
+
+    headers = {
+        'Api-Key': NESHAN_KEY
+    }
+    url = f'https://api.neshan.org/v5/reverse?lat={lat}&lng={lng}'
+    try:
+        res = requests.get(url, headers=headers)
+        return JsonResponse(res.json(), status=res.status_code)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    

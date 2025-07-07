@@ -116,7 +116,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGE_CODE = 'fa'
-
+DEFAULT_CHARSET = 'utf-8'
 TIME_ZONE = 'Asia/Tehran'
 
 USE_I18N = True

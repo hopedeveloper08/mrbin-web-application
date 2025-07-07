@@ -6,3 +6,4 @@ pillow
 zarinpal-py-sdk
 django-filter
 django-widget-tweaks
+requests

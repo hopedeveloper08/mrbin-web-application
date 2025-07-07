@@ -1,8 +1,28 @@
-{% for field in form %}
-    <div class="col-12 d-flex flex-column align-items-center">
-        <div class="w-75">
-            <label class="form-label h5 mb-2 mt-4">{{ field.label }}</label>
-            {{ field }}
+<div class="col-12 d-flex flex-column align-items-center">
+    <div class="w-75">
+        <label class="form-label h5 mb-2 mt-4">نام</label>
+        {{ form.customer_name }}
+    </div>
+</div>
+<div class="col-12 d-flex flex-column align-items-center">
+    <div class="w-75">
+        <label class="form-label h5 mb-2 mt-4">شماره تماس</label>
+        {{ form.phone_number }}
+    </div>
+</div>
+<div class="col-12 d-flex flex-column align-items-center">
+    <div class="w-75">
+        <label class="form-label h5 mb-2 mt-4">کد پستی</label>
+        {{ form.postal_code }}        
+    </div>
+</div>
+<div class="col-12 d-flex flex-column align-items-center">
+    <div class="w-75">
+        <label class="form-label h5 mb-2 mt-4">آدرس</label>
+        <textarea rows="3" class="form-control shadow-sm" readonly>{{ request.session.address }}</textarea>
+        <div class="text-dark">
+            توجه: موقعیت شما به صورت دقیق ثبت شده است اگر نیاز به تغییر آدرس خود دارید        
+            <a href="/address" class="btn-link">اینجا را کلیک کنید...</a>        
         </div>
     </div>
-{% endfor %}
+</div>
