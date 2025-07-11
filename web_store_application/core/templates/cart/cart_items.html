@@ -4,19 +4,16 @@
         {% for bin in cart_items %}
             <div class="list-group-item py-3 px-4 rounded-3 shadow mb-3">
                 <div class="row g-3 align-items-center">
-                    <div class="col-md-3 col-4">
+                    <div class="col-4">
                         <img src="/media/{{ bin.image }}" class="img-fluid rounded" alt="{{ bin.title }}">
                     </div>
-                    <div class="col-md-6 col-8">
+                    <div class="col-8">
                         <h6 class="mb-2">{{ bin.title }}</h6>
                         <div class="small text-muted">
                             <div><strong>تعداد:</strong> {{ bin.quantity }} عدد</div>
                             <div><strong>قیمت واحد:</strong> {{ bin.price }} تومان</div>
                             <div><strong>مجموع:</strong> {{ bin.total_price }} تومان</div>
                         </div>
-                    </div>
-                    <div class="col-md-3 col-12">
-                        {% include "cart/add_and_remove_as_cart_buttons.html" %}
                     </div>
                 </div>
             </div>

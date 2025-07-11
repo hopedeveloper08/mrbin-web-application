@@ -225,7 +225,7 @@ def calculate_postage(request):
     lng = float(lng)
 
     # get postage
-    request.session['postage'] = get_postage_price(lat, lng)
+    request.session['postage'] = get_postage_price(lat, lng, request.session.get('cart'))
     
     # set address
     request.session['lat'] = lat

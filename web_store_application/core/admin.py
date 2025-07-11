@@ -72,12 +72,12 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(PostagePrice)
 class PostagePriceAdmin(admin.ModelAdmin):
-    list_display = ['id', 'init', 'per_km']
-    list_editable = ['init', 'per_km']
+    list_display = ['id', 'up_to_size', 'init', 'per_km']
+    list_editable = ['up_to_size', 'init', 'per_km']
     
     fieldsets = (
         (None, {
-            'fields': ('init', 'per_km')
+            'fields': ('up_to_size', 'init', 'per_km')
         }),
     )
     

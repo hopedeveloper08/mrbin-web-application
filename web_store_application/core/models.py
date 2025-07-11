@@ -69,6 +69,7 @@ class OrderItem(models.Model):
 
 
 class PostagePrice(models.Model):
+    up_to_size = models.PositiveIntegerField(verbose_name='تا حجم')
     init = models.PositiveIntegerField(verbose_name='قیمت اولیه')
     per_km = models.PositiveIntegerField(verbose_name='قیمت به ازای هر کیلومتر')
 
