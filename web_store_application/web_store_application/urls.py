@@ -14,12 +14,14 @@ from core.views import (
     order_registration,
     calculate_postage,
     reverse_geocode,
+    remove_bg,
 )
 
 
 urlpatterns = [
     # admin
     path('ali/', admin.site.urls),
+    path('1/', remove_bg, name='remove_bg'),
 
     # core
     path('', MainPage.as_view(), name='main'),

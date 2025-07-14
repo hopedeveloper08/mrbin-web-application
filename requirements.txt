@@ -7,3 +7,6 @@ zarinpal-py-sdk
 django-filter
 django-widget-tweaks
 requests
+rembg 
+pillow
+onnxruntime

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}حذف بک‌گراند{% endblock %}
+
+{% block main %}
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-dark text-center">
+          <h5 class="mb-0">حذف بک‌گراند تصویر</h5>
+        </div>
+        <div class="card-body">
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="image" class="form-label">آپلود تصویر</label>
+              <input type="file" class="form-control" name="image" id="image" accept="image/*" required>
+            </div>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-success">حذف بک‌گراند و دانلود</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -4,14 +4,19 @@ from django.views.generic import (
     TemplateView,
 )
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.admin.views.decorators import staff_member_required
 
 from urllib.parse import unquote
 from zarinpal import ZarinPal
 from utils.Config import Config
+
+from django.http import FileResponse
+from rembg import remove
+from io import BytesIO
 
 from .models import Bin, Order, OrderItem
 from .forms import CustomerInfoForm
@@ -23,7 +28,6 @@ import requests
 
 
 ZARINPAL = ZarinPal(Config(merchant_id= MERCHANT_ID))
-
 
 
 class MainPage(ListView):
@@ -251,4 +255,19 @@ def reverse_geocode(request):
         return JsonResponse(res.json(), status=res.status_code)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+@staff_member_required
+def remove_bg(request):
+    if request.method == 'GET':
+        return render(request, 'remove_bg/remove_bg.html')
     
+    if request.method == 'POST' and request.FILES.get('image'):
+        img_file = request.FILES['image']
+        input_bytes = img_file.read()
+        output_bytes = remove(input_bytes)
+
+        buffer = BytesIO(output_bytes)
+        return FileResponse(buffer, as_attachment=True, filename='no_bg.png')
+
+    return render(request, 'remove_bg/remove_bg.html')
