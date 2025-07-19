@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}موقعیت سفارش{% endblock %}
+
+{% block main %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<div class="container my-4">
+  <form id="order-form" class="mb-3">
+    {% csrf_token %}
+    <div class="input-group">
+      <input type="number" name="order_id" id="order_id" class="form-control" placeholder="شماره سفارش" required>
+      <button type="submit" class="btn btn-success">نمایش روی نقشه</button>
+    </div>
+    <div id="error" class="alert alert-danger mt-2" style="display: None;">سفارشی با شماره وارد شده وجود ندارد!</div>
+  </form>
+
+  <div id="map" class="shadow rounded" style="min-height: 50vh;"></div>
+</div>
+
+<script>
+  let map = L.map('map').setView([29.6, 52.54], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+  let marker = L.marker([29.6, 52.54]).addTo(map);
+
+  document.getElementById('order-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const orderId = document.getElementById('order_id').value;
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    fetch("/2/", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": csrfToken,
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: new URLSearchParams({ order_id: orderId })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        document.getElementById("error").style.display = "block";
+      } else {
+        document.getElementById("error").style.display = "None";
+        let latlng = [data.lat, data.lng];
+        marker.setLatLng(latlng);
+        map.setView(latlng, 16);
+      }
+    });
+  });
+</script>
+{% endblock %}

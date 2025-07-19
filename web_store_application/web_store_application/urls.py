@@ -15,6 +15,7 @@ from core.views import (
     calculate_postage,
     reverse_geocode,
     remove_bg,
+    location,
 )
 
 
@@ -22,6 +23,7 @@ urlpatterns = [
     # admin
     path('ali/', admin.site.urls),
     path('1/', remove_bg, name='remove_bg'),
+    path('2/', location, name='location'),
 
     # core
     path('', MainPage.as_view(), name='main'),

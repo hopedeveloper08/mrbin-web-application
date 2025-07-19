@@ -260,7 +260,7 @@ def reverse_geocode(request):
 @staff_member_required
 def remove_bg(request):
     if request.method == 'GET':
-        return render(request, 'remove_bg/remove_bg.html')
+        return render(request, 'service/remove_bg.html')
     
     if request.method == 'POST' and request.FILES.get('image'):
         img_file = request.FILES['image']
@@ -270,4 +270,19 @@ def remove_bg(request):
         buffer = BytesIO(output_bytes)
         return FileResponse(buffer, as_attachment=True, filename='no_bg.png')
 
-    return render(request, 'remove_bg/remove_bg.html')
+    return render(request, 'service/remove_bg.html')
+
+
+@staff_member_required
+def location(request):
+    if request.method == 'GET':
+        return render(request, 'service/location.html')
+    
+    if request.method == "POST":
+        order_id = request.POST.get("order_id")
+        print(order_id)
+        try:
+            order = Order.objects.get(id=order_id)
+            return JsonResponse({"lat": order.lat, "lng": order.lng})
+        except Order.DoesNotExist:
+            return JsonResponse({"error": "شماره سفارش وجود ندارد!"}, status=404)
