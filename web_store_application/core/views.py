@@ -215,7 +215,7 @@ def calculate_postage(request):
     address = unquote(address)
     
     # out of shiraz
-    if address == 'خارج از شیراز':
+    if address == 'خارج از شیراز' or address == 'تحویل درب فروشگاه':
         request.session['lat'] = 0
         request.session['lng'] = 0
         request.session['postage'] = 0

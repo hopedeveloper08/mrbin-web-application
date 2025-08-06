@@ -7,7 +7,15 @@
             </li>
             <li class="list-group-item d-flex justify-content-between">
                 <div>هزینه پستی</div>
-                <div class="text-end text-accent">{% if postage != '0' %}{{ postage }} تومان{% else %}توافقی محاسبه میشود{% endif %}</div>
+                <div class="text-end text-accent">
+                    {% if postage != '0' %}
+                        {{ postage }} تومان
+                    {% elif request.session.address == 'تحویل درب فروشگاه' %}
+                        0
+                    {% else %}
+                        توافقی محاسبه میشود
+                    {% endif %}
+                </div>
             </li>
             <li class="list-group-item d-flex justify-content-between">
                 <div>مبلغ نهایی</div>
